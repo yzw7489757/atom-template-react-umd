@@ -16,8 +16,6 @@ const HappyThreadPool = HappyPack.ThreadPool({
   size: os.cpus().length
 });
 
-const lessRegex = /\.less$/;
-const lessModuleRegex = /\.module\.less$/;
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -40,17 +38,18 @@ module.exports = {
       ...eslint(),
       {
         test: /\.module\.(le|c)ss$/,
-        use: 'Happypack/loader?id=HappyModuleLess'
+        use: 'Happypack/loader?id=ModuleLess'
       },
       {
-        test: /[^\.module]+\.(le|c)ss$/, // 非模块化
-        use: 'Happypack/loader?id=HappyLess'
+        test: /.(le|c)ss$/, // 非模块化
+        exclude:/\.module\.(le|c)ss$/,
+        use: 'Happypack/loader?id=Less'
       },
       {
         test: /.(js|jsx)$/,
         exclude: /node_modules/,
         use: [{
-            loader: "Happypack/loader?id=HappyBabel"
+            loader: "Happypack/loader?id=Babel"
           },
           {
             loader: 'react-hot-loader/webpack',
@@ -98,7 +97,7 @@ module.exports = {
       chunkFilename: "[name]_[id].css"
     }),
     new HappyPack({
-      id: 'HappyLess',
+      id: 'Less',
       use: [
         IS_PROD ? MiniCssExtractPlugin.loader : "style-loader",
         "css-loader",
@@ -107,7 +106,7 @@ module.exports = {
       ]
     }),
     new HappyPack({
-      id: 'HappyModuleLess',
+      id: 'ModuleLess',
       use: [
         IS_PROD ? MiniCssExtractPlugin.loader : "style-loader",
         {
@@ -124,7 +123,7 @@ module.exports = {
       ]
     }),
     new HappyPack({
-      id: 'HappyBabel',
+      id: 'Babel',
       loaders: [{
         loader: 'babel-loader?cacheDirectory=true',
       }],

@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const path = require('path')
-const portFinder = require('portfinder');//端口查找
+const portFinder = require('portfinder'); // 端口查找
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');// 友好提示
 const config = require('./webpack.base.conf');
 const {resolve,getIp} = require('./util');
@@ -27,6 +27,11 @@ const devConfig = merge(config,{
       //   }
       // },
     },
+  },
+  resolve:{
+    alias:{
+      'react-dom': resolve('./node_modules/@hot-loader/react-dom')
+    }
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),

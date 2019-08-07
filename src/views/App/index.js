@@ -1,11 +1,17 @@
+import { hot } from 'react-hot-loader/root';
+import { setConfig } from 'react-hot-loader';
 import React from 'react';
-import less from './index.module.less';
+import less from './index.module.css';
+
+setConfig({
+  reloadHooks: false
+});
 
 function App() {
   return (
     <div className={less.page}>
-      <div className={less.text}>222</div>
+      Hello
     </div>
   );
 }
-export default App;
+export default hot(App);
