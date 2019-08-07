@@ -6,7 +6,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer'); // 打包�
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');// 用于优化或者压缩CSS资源
 const AutoDllPlugin = require('autodll-webpack-plugin'); //dll动态链接库
 const CompressionWebpackPlugin = require('compression-webpack-plugin'); // gzip压缩
-const UglifyJsPlugin = require("uglifyjs-3-webpack-plugin"); // 再次压缩
+const Uglify = require("uglifyjs-webpack-plugin"); // 压缩js es6
 const { resolve ,dllModule} = require('./util');
 const productionGzipExtensions = ['js', 'css']
 const config = require('./webpack.base.conf');
@@ -18,9 +18,9 @@ const path = require('path')
 const getAnalyzerPlugin = () => {
  return process.argv.includes('--report')?[new BundleAnalyzerPlugin()]:[] 
 };
+
 module.exports = merge(config, {
   bail: true, // 出现错误立即停止打包
-  watch: false,
   plugins: [
     new CopyWebpackPlugin([
       {
@@ -41,15 +41,6 @@ module.exports = merge(config, {
     // new webpack.DefinePlugin({
     //   'process.env': proEnv
     // }),
-    new UglifyJsPlugin({
-      uglifyOptions: {
-        warnings: false,
-        ie8: false,
-        output: {
-          comments: false
-        }
-      }
-    }),
     new CompressionWebpackPlugin({
       filename: '[path].gz[query]',
       algorithm: 'gzip',
@@ -65,7 +56,7 @@ module.exports = merge(config, {
       entry: {
         vendor:[...dllModule]
       }
-    }),
+    })
   ],
   performance: {
     assetFilter: function(assetFilename) {
@@ -75,6 +66,26 @@ module.exports = merge(config, {
     hints: false
   },
   optimization: {
+    minimizer: [
+      new Uglify({
+        include:resolve('src'),
+        exclude:/node_modules/,
+        cache: true,
+        parallel:true,
+        sourceMap:true,
+        uglifyOptions: {
+          warnings: false,
+          parse: {},
+          compress: {},
+          mangle: true,
+          output: null,
+          toplevel: false,
+          nameCache: null,
+          ie8: false,
+          keep_fnames: false,
+        }
+      })
+    ],
     splitChunks: {
       chunks: 'async', // 可选 all，针对异步分割或者全部分割
       minSize: 30000, // 低于 30kb 的文件不分割

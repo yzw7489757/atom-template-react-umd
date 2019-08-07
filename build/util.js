@@ -2,8 +2,8 @@
 const os = require('os');
 const path = require('path');
 const formatter = require('eslint-friendly-formatter')
-const threadLoader = require('thread-loader');
-const { loader : miniCssLoad } = require("mini-css-extract-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const threadLoader = require('thread-loader');
 const resolve = dir => path.resolve(__dirname, '../', dir);
 const IS_PROD = process.env.NODE_ENV === 'production';
 
@@ -37,37 +37,24 @@ const getEslintRules = () => {
   return eslint;
 };
 
-// css loader 配置
-const cssLoaders = () => {
-  
-  const loader = (loader, obj = {}) => {
-    return {
-      loader: `${loader}-loader`,
-      ...obj
-    }
+// HTML
+const htmlPlugins = () => {
+  const template = resolve('public/index.html')
+  let minify = {
+    removeComments: true,// 注释
+    collapseWhitespace: true, // 缩减文本空白
+    removeAttributeQuotes: true, // 属性周围的引号
+    removeEmptyAttributes: true //所有空属性值
   }
-
-  const generateCssLoaders = (loaderName) => {
-    const baseLoader = [loader('css')].concat(IS_PROD ? loader('postcss'):[]);
-    loaderName && baseLoader.push(loader(`${loaderName}`));
-    IS_PROD && baseLoader.unshift(miniCssLoad);    // 如果是生产环境就引入提取 css 的 loader
-    return [...baseLoader];
-  };
-
-  const loaderObj = {
-    css: ["style-loader",...generateCssLoaders()],
-    '(scss|sass)': [ "style-loader",...generateCssLoaders('sass')], // [MiniCssExtractPlugin.loader,'style-loader', 'css-loader', 'sass-loader']
-  };
-
-  const loaders = [];
-  for (const name in loaderObj) {
-    loaders.push({
-      test: new RegExp(`\\.${name}$`),
-      use: loaderObj[name]
-    });
-  }
-  return loaders;
-};
+  return [
+    new HtmlWebpackPlugin({
+      template,
+      inject:true,
+      chunksSortMode:'none', // 不对插入的js进行排序 
+      ...(IS_PROD?minify:{})
+    })
+  ]
+}
 
 // 缓存配置，优化打包速度
 const optimizeLoaders = (dir, name) => [{
@@ -107,9 +94,9 @@ function getIPAdress() {
 module.exports = {
   IS_PROD,
   resolve,
+  htmlPlugins,
   dllModule:vendors,
-  getIp:getIPAdress(),
+  getIp:getIPAdress,
   optimizeLoaders,
-  eslint: getEslintRules(),
-  cssLoaders: cssLoaders(),
+  eslint: getEslintRules
 };

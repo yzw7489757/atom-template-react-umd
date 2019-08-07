@@ -1,59 +1,63 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const {
+  CleanWebpackPlugin
+} = require('clean-webpack-plugin');
 const path = require('path')
-const { IS_PROD, resolve, eslint, cssLoaders } = require('./util');
+const {
+  IS_PROD,
+  resolve,
+  eslint,
+  cssLoaders,
+  htmlPlugins
+} = require('./util');
 const HappyPack = require('happypack');
 const os = require('os');
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
+const HappyThreadPool = HappyPack.ThreadPool({
+  size: os.cpus().length
+});
 
-const PROHtmlPlugins = () => {
-  const template = path.resolve(__dirname, '../public/index.html')
-  return IS_PROD ? [
-    new HtmlWebpackPlugin({
-      template,
-      inject:true,
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeAttributeQuotes: true,
-      },
-      chunksSortMode:'none'
-    })
-  ] : [new HtmlWebpackPlugin({
-      template,
-      inject:true,
-      chunksSortMode:'none'
-  })]
-}
+const lessRegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
+
 module.exports = {
   mode: process.env.NODE_ENV,
-  entry: {
-    app: './src/index.js',
-  },
   output: {
-    publicPath: '/' ,
+    publicPath: '/',
     path: resolve('dist'),
     filename: 'js/[name].[hash].js',
     chunkFilename: 'js/[name].bundle.js',
   },
   resolve: {
-    alias:{
+    extensions: ['.js', '.json'],
+    alias: {
       '@': resolve('src'),
-      'public':resolve('public'),
-      'views':resolve('src/views'),
+      'public': resolve('public'),
+      'views': resolve('src/views')
     }
   },
   module: {
     rules: [
-      ...eslint,
-      ...cssLoaders,
+      ...eslint(),
+      {
+        test: /\.module\.(le|c)ss$/,
+        use: 'Happypack/loader?id=HappyModuleLess'
+      },
+      {
+        test: /[^\.module]+\.(le|c)ss$/, // 非模块化
+        use: 'Happypack/loader?id=HappyLess'
+      },
       {
         test: /.(js|jsx)$/,
         exclude: /node_modules/,
-        use:[
+        use: [{
+            loader: "Happypack/loader?id=HappyBabel"
+          },
           {
-            loader: "happypack/loader?id=happyBabel"
+            loader: 'react-hot-loader/webpack',
+            options: {
+              babelrc: true,
+              plugins: ['react-hot-loader/babel'],
+            }
           }
         ],
         include: resolve('src'),
@@ -88,24 +92,44 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    ...PROHtmlPlugins(),
+    ...htmlPlugins(),
     new MiniCssExtractPlugin({
       filename: "[name]_[hash].css",
       chunkFilename: "[name]_[id].css"
     }),
     new HappyPack({
-      id: 'happyBabel',
+      id: 'HappyLess',
+      use: [
+        IS_PROD ? MiniCssExtractPlugin.loader : "style-loader",
+        "css-loader",
+        "postcss-loader",
+        "less-loader"
+      ]
+    }),
+    new HappyPack({
+      id: 'HappyModuleLess',
+      use: [
+        IS_PROD ? MiniCssExtractPlugin.loader : "style-loader",
+        {
+          loader: "css-loader",
+          options: {
+            sourceMap: !IS_PROD,
+            modules: {
+              localIdentName: "[local]___[hash:base64:5]"
+            },
+          }
+        },
+        "postcss-loader",
+        "less-loader"
+      ]
+    }),
+    new HappyPack({
+      id: 'HappyBabel',
       loaders: [{
-          loader: 'babel-loader?cacheDirectory=true',
+        loader: 'babel-loader?cacheDirectory=true',
       }],
-      threadPool: happyThreadPool,
+      threadPool: HappyThreadPool,
       verbose: true,
-  })
-  ],
-  stats: {
-    children: false, // 避免过多子信息
-    builtAt: true, // 添加构建日期和构建时间信息
-    cached: true, // 添加缓存（但未构建）模块的信息
-    cachedAssets: true, // 显示缓存的资源（将其设置为 `false` 则仅显示输出的文件）
-  }
+    })
+  ]
 };
