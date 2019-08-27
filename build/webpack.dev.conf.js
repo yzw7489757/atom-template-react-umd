@@ -5,7 +5,6 @@ const portFinder = require('portfinder'); // 端口查找
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');// 友好提示
 const config = require('./webpack.base.conf');
 const {resolve,getIp} = require('./util');
-// const devApi = require('../env.development')
 const devConfig = merge(config,{
   devtool: 'cheap-module-eval-source-map', // 代码追踪
   entry:{
@@ -13,10 +12,10 @@ const devConfig = merge(config,{
   },
   devServer: {
     hot: true,
-    quiet: true, // 关闭 webpack-dev-server 的提示，用 friendly-error-plugin
+    quiet: true, 
     historyApiFallback: true,
     host: 'localhost',
-    overlay:{ warnings: false, errors: true },//出现编译error时，全屏覆盖显示
+    overlay:{ warnings: false, errors: true },// 出现编译error时，全屏覆盖显示
     clientLogLevel: 'warning', // 控制台提示信息级别是 warning 以上
     proxy:{
       // '/api': {
@@ -34,10 +33,7 @@ const devConfig = merge(config,{
     }
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    // new webpack.DefinePlugin({
-    //   'process.env': devApi
-    // })
+    new webpack.HotModuleReplacementPlugin()
   ]
 })
 

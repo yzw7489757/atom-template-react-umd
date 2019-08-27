@@ -10,6 +10,8 @@ const {
   cssLoaders,
   htmlPlugins
 } = require('./util');
+// const proEnv = require('../env.production') // 生成环境变量
+// const devEnv = require('../env.development') // 开发环境变量
 const HappyPack = require('happypack');
 const os = require('os');
 const HappyThreadPool = HappyPack.ThreadPool({
@@ -92,6 +94,9 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     ...htmlPlugins(),
+     new webpack.DefinePlugin({
+      // 'process.env': IS_PROD ? devEnv : proEnv
+    }),
     new MiniCssExtractPlugin({
       filename: "[name]_[hash].css",
       chunkFilename: "[name]_[id].css"

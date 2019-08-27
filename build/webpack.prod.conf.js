@@ -10,7 +10,6 @@ const Uglify = require("uglifyjs-webpack-plugin"); // 压缩js es6
 const { resolve ,dllModule} = require('./util');
 const productionGzipExtensions = ['js', 'css']
 const config = require('./webpack.base.conf');
-// const proEnv = require('../env.production')
 const path = require('path')
 
 // 用来在本地打包时分析，webpack-cli 启动时添加 --report 参数
@@ -38,9 +37,6 @@ module.exports = merge(config, {
       },
       canPrint: true
     }),
-    // new webpack.DefinePlugin({
-    //   'process.env': proEnv
-    // }),
     new CompressionWebpackPlugin({
       filename: '[path].gz[query]',
       algorithm: 'gzip',
@@ -108,7 +104,7 @@ module.exports = merge(config, {
         },
         styles: {
           name: 'styles',
-          test: /\.(css|scss)$/,
+          test: /\.(c|le)ss)$/,
           chunks: 'all',
           enforce: true
         }
