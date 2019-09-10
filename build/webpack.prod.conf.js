@@ -7,10 +7,12 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');//
 const AutoDllPlugin = require('autodll-webpack-plugin'); //dll动态链接库
 const CompressionWebpackPlugin = require('compression-webpack-plugin'); // gzip压缩
 const Uglify = require("uglifyjs-webpack-plugin"); // 压缩js es6
+const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 const { resolve ,dllModule} = require('./util');
 const productionGzipExtensions = ['js', 'css']
 const config = require('./webpack.base.conf');
 const path = require('path')
+const { name } = require('../package.json')
 
 // 用来在本地打包时分析，webpack-cli 启动时添加 --report 参数
 // 不用该形式 webpack 会报错，该参数只用来此处判断，并无 webpack 相关作用
@@ -52,6 +54,11 @@ module.exports = merge(config, {
       entry: {
         vendor:[...dllModule]
       }
+    }),
+    new WebpackBuildNotifierPlugin({
+      title: name + ' Successful Build',
+      // logo: path.resolve("./img/favicon.png"),
+      suppressSuccess: true
     })
   ],
   performance: {

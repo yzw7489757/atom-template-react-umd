@@ -2,7 +2,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const {
   CleanWebpackPlugin
 } = require('clean-webpack-plugin');
+const WebpackBar = require('webpackbar');
 const path = require('path')
+const { name } = require('../package.json')
 const {
   IS_PROD,
   resolve,
@@ -134,6 +136,10 @@ module.exports = {
       }],
       threadPool: HappyThreadPool,
       verbose: true,
+    }),
+    new WebpackBar({
+      profile:true,
+      name
     })
   ]
 };
