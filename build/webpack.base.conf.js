@@ -1,7 +1,9 @@
+const webpack = require('webpack')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const {
   CleanWebpackPlugin
 } = require('clean-webpack-plugin');
+const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 const WebpackBar = require('webpackbar');
 const path = require('path')
 const { name } = require('../package.json')
@@ -9,11 +11,9 @@ const {
   IS_PROD,
   resolve,
   eslint,
-  cssLoaders,
   htmlPlugins
 } = require('./util');
-// const proEnv = require('../env.production') // 生成环境变量
-// const devEnv = require('../env.development') // 开发环境变量
+const Env = require('./env')
 const HappyPack = require('happypack');
 const os = require('os');
 const HappyThreadPool = HappyPack.ThreadPool({
@@ -96,11 +96,11 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     ...htmlPlugins(),
-     new webpack.DefinePlugin({
-      // 'process.env': IS_PROD ? devEnv : proEnv
+    new webpack.DefinePlugin({
+      'process.env': Env
     }),
     new MiniCssExtractPlugin({
-      filename: "[name]_[hash].css",
+      filename: "[name]_[hash:8].css",
       chunkFilename: "[name]_[id].css"
     }),
     new HappyPack({
@@ -140,6 +140,11 @@ module.exports = {
     new WebpackBar({
       profile:true,
       name
+    }),
+    new WebpackBuildNotifierPlugin({
+      title: name + IS_PROD?' Successful Build':' Successful startup is Running',
+      logo: path.resolve("../public/favicon.png"),
+      suppressSuccess: 'initial'
     })
   ]
 };

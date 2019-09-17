@@ -1,7 +1,7 @@
 import { hot } from 'react-hot-loader/root';
 import { setConfig } from 'react-hot-loader';
 import React from 'react';
-import less from './index.module.css';
+import less from './index.module.less';
 
 setConfig({
   reloadHooks: false
@@ -9,8 +9,10 @@ setConfig({
 
 function App() {
   return (
-    <div className={less.page}>
-      Hello
+    <div className={less.fullPage}>
+      <div className={less.box}>
+        <h1>Hello, Development</h1>
+      </div>
     </div>
   );
 }

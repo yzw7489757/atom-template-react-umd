@@ -3,7 +3,7 @@ const os = require('os');
 const path = require('path');
 const formatter = require('eslint-friendly-formatter')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const threadLoader = require('thread-loader');
+
 const resolve = dir => path.resolve(__dirname, '../', dir);
 const IS_PROD = process.env.NODE_ENV === 'production';
 
@@ -56,27 +56,6 @@ const htmlPlugins = () => {
   ]
 }
 
-// 缓存配置，优化打包速度
-const optimizeLoaders = (dir, name) => [{
-    loader: 'cache-loader',
-    options: {
-      cacheDirectory: resolve(`.cache/${dir}`),
-    },
-  },
-  {
-    loader: 'thread-loader',
-    options: {
-      name,
-      workers: os.cpus().length - 1,
-      workerParallelJobs: 50,
-      workerNodeArgs: ['--max-old-space-size=1024'],
-      poolRespawn: !!IS_PROD,
-      poolTimeout: 2000,
-      poolParallelJobs: 50,
-    },
-  },
-];
-
 function getIPAdress() {
   // 获取本地ip 开启局域网访问
   var interfaces = os.networkInterfaces();　　
@@ -97,6 +76,5 @@ module.exports = {
   htmlPlugins,
   dllModule:vendors,
   getIp:getIPAdress,
-  optimizeLoaders,
   eslint: getEslintRules
 };

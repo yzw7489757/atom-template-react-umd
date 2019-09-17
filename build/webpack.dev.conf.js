@@ -5,12 +5,11 @@ const portFinder = require('portfinder'); // 端口查找
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');// 友好提示
 const config = require('./webpack.base.conf');
 const { resolve, getIp } = require('./util');
-const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
-const { name } = require('../package.json')
+
 const devConfig = merge(config,{
   devtool: 'cheap-module-eval-source-map', // 代码追踪
   entry:{
-    app:['react-hot-loader/patch',resolve('./src/index.js')]
+    app:['react-hot-loader/patch', resolve('./src/index.js')]
   },
   devServer: {
     hot: true,
@@ -31,16 +30,15 @@ const devConfig = merge(config,{
   },
   resolve:{
     alias:{
-      'react-dom': resolve('./node_modules/@hot-loader/react-dom')
-    }
+      'react-dom': resolve('./node_modules/@hot-loader/react-dom'),
+      "@":resolve('./src/'),
+      view:resolve('./src/views/'),
+      assets:resolve('./src/assets/')
+    },
+    extensions:['.js','.less','.json']
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new WebpackBuildNotifierPlugin({
-      title: name + ' Successful startup is Running',
-      // logo: path.resolve("./img/favicon.png"),
-      suppressSuccess: true
-    })
+    new webpack.HotModuleReplacementPlugin()
   ]
 })
 

@@ -16,6 +16,13 @@ React webpack customTemplate
 
 线上环境:
 
+## 规范约束
+
+语法语义规范：
+
+## 备注
+
+
 ## 成员
 
 ## 运行
@@ -24,3 +31,5 @@ React webpack customTemplate
 > npm run dev
 > npm run build
 > npm run build--report
+
+## 版本协议

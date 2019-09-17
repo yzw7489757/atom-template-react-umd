@@ -7,7 +7,6 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');//
 const AutoDllPlugin = require('autodll-webpack-plugin'); //dll动态链接库
 const CompressionWebpackPlugin = require('compression-webpack-plugin'); // gzip压缩
 const Uglify = require("uglifyjs-webpack-plugin"); // 压缩js es6
-const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 const { resolve ,dllModule} = require('./util');
 const productionGzipExtensions = ['js', 'css']
 const config = require('./webpack.base.conf');
@@ -55,11 +54,6 @@ module.exports = merge(config, {
         vendor:[...dllModule]
       }
     }),
-    new WebpackBuildNotifierPlugin({
-      title: name + ' Successful Build',
-      // logo: path.resolve("./img/favicon.png"),
-      suppressSuccess: true
-    })
   ],
   performance: {
     assetFilter: function(assetFilename) {
@@ -70,27 +64,39 @@ module.exports = merge(config, {
   },
   optimization: {
     minimizer: [
-      new Uglify({
-        include:resolve('src'),
-        exclude:/node_modules/,
+      // 自定义js优化配置，将会覆盖默认配置
+      new UglifyJsPlugin({
+        exclude: /\.min\.js$/, // 过滤掉以".min.js"结尾的文件，我们认为这个后缀本身就是已经压缩好的代码，没必要进行二次压缩
         cache: true,
-        parallel:true,
-        sourceMap:true,
+        parallel: true, // 开启并行压缩，充分利用cpu
+        sourceMap: false,
+        extractComments: false, // 移除注释
         uglifyOptions: {
-          warnings: false,
-          parse: {},
-          compress: {},
-          mangle: true,
-          output: null,
-          toplevel: false,
-          nameCache: null,
-          ie8: false,
-          keep_fnames: false,
+          compress: {
+            unused: true,
+            drop_debugger: true
+          },
+          output: {
+            comments: false
+          }
         }
+      }),
+      // 用于优化css文件
+      new OptimizeCssAssetsPlugin({
+        assetNameRegExp: /\.(le|c)ss$/g,
+        cssProcessorOptions: {
+          safe: true,
+          autoprefixer: { disable: true }, // 这里是个大坑，稍后会提到
+          mergeLonghand: false,
+          discardComments: {
+            removeAll: true // 移除注释
+          }
+        },
+        canPrint: true
       })
     ],
     splitChunks: {
-      chunks: 'async', // 可选 all，针对异步分割或者全部分割
+      chunks: 'initial', // 从哪些chunks里面抽取代码，可选 all，针对异步分割或者全部分割
       minSize: 30000, // 低于 30kb 的文件不分割
       maxSize: 0, // 分割前文件最大体积，0表示不限制
       minChunks: 2, // 被引用次数
@@ -99,9 +105,11 @@ module.exports = merge(config, {
       automaticNameDelimiter: '~', // 分割出的文件中间连接符
       name: true, // 表示分割出的文件自动生成文件名
       cacheGroups: { // 缓存组，可将多个 chunk 打包到一起，成一个 vendor 文件
-        vendors: { // 类似 webpack 的 entry 里的属性名，会生成一个 vendors~webpack.entry.filename 的一个文件名
+        vendor: { // 类似 webpack 的 entry 里的属性名，会生成一个 vendors~webpack.entry.filename 的一个文件名
           test: /[\\/]node_modules[\\/]/, // 分割规则
           priority: -10, // 优先级，在同时满足 cacheGroups 下所有的内容时，优先采用哪一个条件
+          minSize: 0,
+          maxSize: 50000
           // filename: '[name].bundle.js', // 可设置项目，自定义文件名
         },
         default: { // 不符合 vendors 的 test 规则时
@@ -109,13 +117,19 @@ module.exports = merge(config, {
           priority: -20, // 优先级，-20 比 -10 要低，也就是在两者条件都满足下，会先采用 vendors 的分割规则
           reuseExistingChunk: true, // 表示是否使用已有的 chunk，如果为 true 则表示如果当前的 chunk 包含的模块已经被抽取出去了，那么将不会重新生成新的。
         },
+        common: { // 公共模块代码抽离
+          name:'common',
+          chunks: 'initial', // 从入口开始，不考虑异步
+          minChunks: 2,
+        },
         styles: {
           name: 'styles',
-          test: /\.(c|le)ss)$/,
+          test: /\.(le|c)ss$/,
           chunks: 'all',
-          enforce: true
+          enforce: true,
+          priority: 20
         }
       },
-    },
+    }
   }
 });
