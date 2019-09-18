@@ -1,25 +1,21 @@
 const webpack = require('webpack')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const {
-  CleanWebpackPlugin
-} = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 const WebpackBar = require('webpackbar');
 const path = require('path')
+const HappyPack = require('happypack');
+const os = require('os');
+const threadPool = HappyPack.ThreadPool({ size: os.cpus().length });
+
 const { name } = require('../package.json')
+const Env = require('./env')
 const {
   IS_PROD,
   resolve,
   eslint,
   htmlPlugins
 } = require('./util');
-const Env = require('./env')
-const HappyPack = require('happypack');
-const os = require('os');
-const HappyThreadPool = HappyPack.ThreadPool({
-  size: os.cpus().length
-});
-
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -52,7 +48,8 @@ module.exports = {
       {
         test: /.(js|jsx)$/,
         exclude: /node_modules/,
-        use: [{
+        use: [
+          {
             loader: "Happypack/loader?id=Babel"
           },
           {
@@ -110,7 +107,8 @@ module.exports = {
         "css-loader",
         "postcss-loader",
         "less-loader"
-      ]
+      ],
+      threadPool
     }),
     new HappyPack({
       id: 'ModuleLess',
@@ -127,14 +125,15 @@ module.exports = {
         },
         "postcss-loader",
         "less-loader"
-      ]
+      ],
+      threadPool
     }),
     new HappyPack({
       id: 'Babel',
       loaders: [{
         loader: 'babel-loader?cacheDirectory=true',
       }],
-      threadPool: HappyThreadPool,
+      threadPool,
       verbose: true,
     }),
     new WebpackBar({
@@ -142,7 +141,7 @@ module.exports = {
       name
     }),
     new WebpackBuildNotifierPlugin({
-      title: name + IS_PROD?' Successful Build':' Successful startup is Running',
+      title: name + IS_PROD ? ' Successful Build':' Successful startup is Running',
       logo: path.resolve("../public/favicon.png"),
       suppressSuccess: 'initial'
     })

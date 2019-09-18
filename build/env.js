@@ -1,25 +1,22 @@
-const path = require('path')
-const fs = require('fs')
-
-const exec = require('child_process').execSync
+const exec = require('child_process').execSync;
 // Branch Name
-const branchName = exec('git rev-parse --abbrev-ref HEAD').toString().trim()
+const branchName = exec('git rev-parse --abbrev-ref HEAD').toString().trim();
 
 // command arguments
-const agrs = process.argv
-const API ={
-  develop:{
-    BASE_URL:'"/"',
-    STATIC_URL:'""'
+// const agrs = process.argv;
+const API = {
+  develop: {
+    BASE_URL: '"/"',
+    STATIC_URL: '""',
   },
-  testing:{
-    BASE_URL:'"/"',
-    STATIC_URL:'""'
+  testing: {
+    BASE_URL: '"/"',
+    STATIC_URL: '""',
   },
-  master:{
-    BASE_URL:'"/"',
-    STATIC_URL:'""'
-  }
-}
+  master: {
+    BASE_URL: '"/"',
+    STATIC_URL: '""',
+  },
+};
 
-module.exports = API[branchName]
+module.exports = API[branchName];

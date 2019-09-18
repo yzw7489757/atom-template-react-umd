@@ -4,10 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --config build/webpack.prod.conf.js --progress",
+    "build": "cross-env NODE_ENV=production webpack --config build/webpack.prod.conf.js",
     "report": "webpack --config build/webpack.prod.conf.js --report --mode production",
     "start": "cross-env NODE_ENV=production webpack",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.conf.js --progress"
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --host 0.0.0.0 --config build/webpack.dev.conf.js"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -54,6 +54,7 @@
     "purifycss-webpack": "^0.7.0",
     "react-hot-loader": "^4.12.9",
     "style-loader": "^0.23.1",
+    "uglifyjs-3-webpack-plugin": "^1.2.4",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "url-loader": "^2.1.0",
     "webpack": "^4.36.1",

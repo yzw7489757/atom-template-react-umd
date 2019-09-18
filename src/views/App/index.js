@@ -4,7 +4,7 @@ import React from 'react';
 import less from './index.module.less';
 
 setConfig({
-  reloadHooks: false
+  reloadHooks: false,
 });
 
 function App() {
