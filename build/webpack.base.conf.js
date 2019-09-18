@@ -1,20 +1,21 @@
-const webpack = require('webpack')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 const WebpackBar = require('webpackbar');
-const path = require('path')
+const path = require('path');
 const HappyPack = require('happypack');
 const os = require('os');
+
 const threadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
-const { name } = require('../package.json')
-const Env = require('./env')
+const { name } = require('../package.json');
+const Env = require('./env');
 const {
   IS_PROD,
   resolve,
   eslint,
-  htmlPlugins
+  htmlPlugins,
 } = require('./util');
 
 module.exports = {
@@ -29,36 +30,36 @@ module.exports = {
     extensions: ['.js', '.json'],
     alias: {
       '@': resolve('src'),
-      'public': resolve('public'),
-      'views': resolve('src/views')
-    }
+      public: resolve('public'),
+      views: resolve('src/views'),
+    },
   },
   module: {
     rules: [
       ...eslint(),
       {
         test: /\.module\.(le|c)ss$/,
-        use: 'Happypack/loader?id=ModuleLess'
+        use: 'Happypack/loader?id=ModuleLess',
       },
       {
         test: /.(le|c)ss$/, // 非模块化
-        exclude:/\.module\.(le|c)ss$/,
-        use: 'Happypack/loader?id=Less'
+        exclude: /\.module\.(le|c)ss$/,
+        use: 'Happypack/loader?id=Less',
       },
       {
         test: /.(js|jsx)$/,
         exclude: /node_modules/,
         use: [
           {
-            loader: "Happypack/loader?id=Babel"
+            loader: 'Happypack/loader?id=Babel',
           },
           {
             loader: 'react-hot-loader/webpack',
             options: {
               babelrc: true,
               plugins: ['react-hot-loader/babel'],
-            }
-          }
+            },
+          },
         ],
         include: resolve('src'),
       },
@@ -85,8 +86,8 @@ module.exports = {
           name: '[name]-[hash:5].min.[ext]',
           limit: 5000,
           publicPath: 'fonts/',
-          outputPath: 'fonts/'
-        }
+          outputPath: 'fonts/',
+        },
       },
     ],
   },
@@ -94,39 +95,39 @@ module.exports = {
     new CleanWebpackPlugin(),
     ...htmlPlugins(),
     new webpack.DefinePlugin({
-      'process.env': Env
+      'process.env': Env,
     }),
     new MiniCssExtractPlugin({
-      filename: "[name]_[hash:8].css",
-      chunkFilename: "[name]_[id].css"
+      filename: '[name]_[hash:8].css',
+      chunkFilename: '[name]_[id].css',
     }),
     new HappyPack({
       id: 'Less',
       use: [
-        IS_PROD ? MiniCssExtractPlugin.loader : "style-loader",
-        "css-loader",
-        "postcss-loader",
-        "less-loader"
+        IS_PROD ? MiniCssExtractPlugin.loader : 'style-loader',
+        'css-loader',
+        'postcss-loader',
+        'less-loader',
       ],
-      threadPool
+      threadPool,
     }),
     new HappyPack({
       id: 'ModuleLess',
       use: [
-        IS_PROD ? MiniCssExtractPlugin.loader : "style-loader",
+        IS_PROD ? MiniCssExtractPlugin.loader : 'style-loader',
         {
-          loader: "css-loader",
+          loader: 'css-loader',
           options: {
             sourceMap: !IS_PROD,
             modules: {
-              localIdentName: "[local]___[hash:base64:5]"
+              localIdentName: '[local]___[hash:base64:5]',
             },
-          }
+          },
         },
-        "postcss-loader",
-        "less-loader"
+        'postcss-loader',
+        'less-loader',
       ],
-      threadPool
+      threadPool,
     }),
     new HappyPack({
       id: 'Babel',
@@ -137,13 +138,13 @@ module.exports = {
       verbose: true,
     }),
     new WebpackBar({
-      profile:true,
-      name
+      profile: true,
+      name,
     }),
     new WebpackBuildNotifierPlugin({
-      title: name + IS_PROD ? ' Successful Build':' Successful startup is Running',
-      logo: path.resolve("../public/favicon.png"),
-      suppressSuccess: 'initial'
-    })
-  ]
+      title: name + IS_PROD ? ' Successful Build' : ' Successful startup is Running',
+      logo: path.resolve('../public/favicon.png'),
+      suppressSuccess: 'initial',
+    }),
+  ],
 };
