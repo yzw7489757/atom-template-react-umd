@@ -1,4 +1,13 @@
 /*! minireset.css v0.0.2 | MIT License | github.com/jgthms/minireset.css */
+* {
+  box-sizing: inherit;
+  outline: none !important;
+}
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
 html,
 body,
 p,
@@ -25,17 +34,16 @@ h6 {
   margin: 0;
   padding: 0;
 }
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: 100%;
-  font-weight: normal;
+a:hover{
+  text-decoration: none;
 }
-
+a{
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
+  text-decoration: none;
+}
 ul {
   list-style: none;
 }
@@ -49,14 +57,6 @@ textarea {
 
 html {
   box-sizing: border-box;
-}
-
-* {
-  box-sizing: inherit;
-}
-*:before,
-*:after {
-  box-sizing: inherit;
 }
 
 img,

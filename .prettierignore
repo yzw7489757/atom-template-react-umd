@@ -1,2 +1,4 @@
-**/*.md
-package.json
+react/
+node_modules/
+config/
+/public/

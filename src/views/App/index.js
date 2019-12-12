@@ -1,19 +1,19 @@
-import { hot } from 'react-hot-loader/root';
-import { setConfig } from 'react-hot-loader';
 import React from 'react';
-import less from './index.module.less';
+import PropTypes from 'prop-types';
+import styles from './index.module.less';
 
-setConfig({
-  reloadHooks: false,
-});
+const propTypes = {
+  title: PropTypes.string.isRequired,
+};
 
-function App() {
+function App({ title }) {
   return (
-    <div className={less.fullPage}>
-      <div className={less.box}>
-        <h1>Hello, Development</h1>
-      </div>
+    <div style={{ textAlign: 'center' }}>
+      <h2 className={styles.title}>{title}</h2>
     </div>
   );
 }
-export default hot(App);
+
+App.propTypes = propTypes;
+
+export default App;

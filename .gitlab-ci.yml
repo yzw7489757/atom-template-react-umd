@@ -1,0 +1,107 @@
+stages:
+    - deploy-develop
+    - build-develop
+    - ops-develop
+#   - deploy-testing
+#   - build-testing
+#   - ops-testing
+#   - deploy-master
+#   - build-master
+#   - ops-master
+
+deploy-develop_job:
+  stage: deploy-develop
+  before_script:
+    # - if [ -f "/home/data/develop/front/[projectName]/package.json" ]; then rm -f /home/data/develop/front/[projectName]/package.json; fi
+  tags:
+    - bujiang-develop
+  only:
+    - develop
+  script:
+    - bash deploy front [projectName] develop
+
+build-develop_job:
+  stage: build-develop
+  tags:
+    - bujiang-develop
+  only:
+    - develop
+  script:
+    - cd /home/data/develop/front/[projectName]
+    - npm i
+    - npm run build
+
+ops-develop_job:
+  stage: ops-develop
+  tags:
+    - bujiang-develop
+  only:
+    - develop
+  script:
+    - if [ ! -d "/home/html/[projectName]" ]; then mkdir /home/html/[projectName]; fi
+    - rm -rf /home/html/[projectName]/*
+    - cp -rf /home/data/develop/front/[projectName]/dist/* /home/html/[projectName]
+
+# deploy-testing_job:
+#   stage: deploy-testing
+#   tags:
+#     - bujiang-testing
+#   only:
+#     - testing
+#   script:
+#     - if [ -d "/home/data/testing/front/[projectName]/dist" ]; then rm -rf /home/data/testing/front/[projectName]/dist; fi
+#     - bash deploy front [projectName] testing
+
+# build-testing_job:
+#   stage: build-testing
+#   tags:
+#     - bujiang-testing
+#   only:
+#     - testing
+#   script:
+#     - cd /home/data/testing/front/[projectName]
+#     # - source /etc/profile
+#     - npm i
+#     - npm run build:staging
+
+# ops-testing_job:
+#   stage: ops-testing
+#   tags:
+#     - bujiang-testing
+#   only:
+#     - testing
+#   script:
+#     - if [ ! -d "/home/html/[projectName]" ]; then mkdir /home/html/[projectName]; fi
+#     - rm -rf /home/html/[projectName]/*
+#     - cp -rf /home/data/testing/front/[projectName]/dist/* /home/html/[projectName]
+    
+# deploy-master_job:
+#   stage: deploy-master
+#   tags:
+#     - firebird
+#   only:
+#     - master
+#   script:
+#     - bash deploy front [projectName] master
+
+# build-master_job:
+#   stage: build-master
+#   tags:
+#     - firebird
+#   only:
+#     - master
+#   script:
+#     - cd /data/wwwroot/master/front/[projectName]
+#     - npm i
+#     - npm run build:production
+
+# ops-master_job:
+#   stage: ops-master
+#   tags:
+#     - firebird
+#   only:
+#     - master
+#   script:
+#     - if [ ! -d "/data/wwwroot/html/[projectName]" ]; then mkdir /data/wwwroot/html/[projectName]; fi
+#     - rm -rf /data/wwwroot/html/[projectName]/*
+#     - cp -rf /data/wwwroot/master/front/[projectName]/dist/* /data/wwwroot/html/[projectName]
