@@ -39,7 +39,7 @@ const UglifyJsPlugin = require('uglifyjs-3-webpack-plugin'); // 压缩js
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer'); // 打包分析
 const getAnalyzerPlugin = () => (process.argv.includes('--report') ? [new BundleAnalyzerPlugin()] : []);
 
-let AutoDLLInjectPlugin = require("./plugins/AutoDLLInjectPlugin.js");
+// let AutoDLLInjectPlugin = require("./plugins/AutoDLLInjectPlugin.js");
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
@@ -719,17 +719,17 @@ module.exports = function(webpackEnv) {
         profile: true,
         name
       }),
-      new AutoDllPlugin({
-        inject: true,
-        filename: '[name]_[hash].dll.js',
-        path: './dll',
-        entry: {
-          vendor: [...getVendors()],
-        },
-      }),
-      new AutoDLLInjectPlugin({
-        fileMap: filename => `./dll/${filename}`
-      }),
+      // new AutoDllPlugin({
+      //   inject: true,
+      //   filename: '[name]_[hash].dll.js',
+      //   path: './dll',
+      //   entry: {
+      //     vendor: [...getVendors()],
+      //   },
+      // }),
+      // new AutoDLLInjectPlugin({
+      //   fileMap: filename => `./dll/${filename}`
+      // }),
       ...getAnalyzerPlugin(),
       // Moment.js is an extremely popular library that bundles large locale files
       // by default due to how Webpack interprets its code. This is a practical
