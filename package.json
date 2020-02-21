@@ -1,7 +1,10 @@
 {
   "name": "react",
   "version": "0.1.0",
-  "private": true,
+  "private": "<%=private%>",
+  "autor":"<%=author%>",
+  "description": "<%=description%>",
+  "license": "<%=license%>",
   "dependencies": {
     "axios": "^0.19.0",
     "core-js": "^2.6.9",
