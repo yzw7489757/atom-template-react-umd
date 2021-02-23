@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <title> umd-package-loader </title>
+  <link href="https://g.alicdn.com/code/lib/antd/4.1.3/antd.css" rel="stylesheet">
+</head>
+<script src="//g.alicdn.com/code/lib/require.js/2.3.6/require.min.js"></script>
+
+<body>
+  <div id="root"></div>
+
+</body>
+  <script>
+    window.require.config({
+      timeout: 30,
+      paths: {
+        'react': '//g.alicdn.com/code/lib/react/16.14.0/umd/react.development',
+        'react-dom': '//g.alicdn.com/code/lib/react-dom/16.14.0/umd/react-dom.development',
+        'react-router-dom': '//cdnjs.cloudflare.com/ajax/libs/react-router-dom/5.1.1/react-router-dom',
+        'redux': '//g.alicdn.com/code/lib/redux/4.0.1/redux',
+        'moment': '//g.alicdn.com/code/lib/moment.js/2.29.1/moment',
+        'vue': '//g.alicdn.com/code/lib/vue/2.6.2/vue',
+        'antd': '//g.alicdn.com/code/lib/antd/4.1.3/antd',
+        "vuex": "//g.alicdn.com/code/lib/vuex/3.1.1/vuex",
+        "lodash": "//g.alicdn.com/code/lib/lodash.js/4.17.20/lodash",
+        "xindex": './xindex',
+        "index": './index',
+      },
+    })
+    require(['index', 'xindex'])
+  </script>
+</html>

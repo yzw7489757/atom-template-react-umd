@@ -4,6 +4,39 @@ const { resolve } = require('path')
 const { name, version, cssModules } = require('../package.json')
 const { library } = require('./library');
 
+const nonCssModuleRegex = /\.(less|css)$/;
+const cssModuleRegex = /\.module\.(less|css)$/;
+
+const getStyleLoader = enableCssModule => {
+  const moduleOption = enableCssModule ? {
+    modules: true,
+    localIdentName: '[local]___[hash:base64:5]',
+  } : {}
+
+  return ([
+    {
+      loader: 'style-loader',
+      options: { injectType: 'singletonStyleTag' }
+    },
+    {
+      loader: 'css-loader',
+      options: {
+        sourceMap: true,
+        ...moduleOption,
+      }
+    },
+    {
+      loader: 'less-loader',
+      options: {
+        sourceMap: true,
+        javascriptEnabled: true,
+        ...moduleOption,
+      },
+    },
+  ]
+  )
+}
+
 const base = {
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
@@ -46,12 +79,17 @@ const base = {
             }
           },
           {
-            loader: 'eslint-loader',
-            options: {
-              quiet: true,
-              failOnError: false,
-              fix: false
-            }
+            oneOf: [
+              {
+                test: nonCssModuleRegex,
+                exclude: cssModuleRegex,
+                use: getStyleLoader(false)
+              },
+              {
+                test: cssModuleRegex,
+                use: getStyleLoader(true)
+              }
+            ]
           }
         ]
       },
@@ -109,30 +147,6 @@ const base = {
     },
     'moment': 'moment',
     'moment/locale/zh-cn' : 'moment.locale',
-    '@ali/mirror-data-engine': {
-      root: 'mirrorDataEngine',
-      commonjs2: '@ali/mirror-data-engine',
-      commonjs: '@ali/mirror-data-engine',
-      amd: '@ali/mirror-data-engine',
-    },
-    '@ali/mirror-view-engine': {
-      root: 'mirrorViewEngine',
-      commonjs2: '@ali/mirror-view-engine',
-      commonjs: '@ali/mirror-view-engine',
-      amd: '@ali/mirror-view-engine',
-    },
-    '@ali/mirror-form': {
-      root: 'mirrorForm',
-      commonjs2: '@ali/mirror-form',
-      commonjs: '@ali/mirror-form',
-      amd: '@ali/mirror-form'
-    },
-    '@ali/mirror-card': {
-      root: 'mirrorCard',
-      commonjs2: '@ali/mirror-card',
-      commonjs: '@ali/mirror-card',
-      amd: '@ali/mirror-card',
-    },
   },
 }
 
